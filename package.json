@@ -1,0 +1,24 @@
+{
+  "name": "portfolio-project",
+  "version": "1.0.0",
+  "description": "I Wet My Plants Backend Portfolio Project",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "4.18.2",
+    "morgan": "1.10.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chilolay/Backend-Portfolio-Project.git"
+  },
+  "author": "Chloe Boyd",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Chilolay/Backend-Portfolio-Project/issues"
+  },
+  "homepage": "https://github.com/Chilolay/Backend-Portfolio-Project#readme"
+}
