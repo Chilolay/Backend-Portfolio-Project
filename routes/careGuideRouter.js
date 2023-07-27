@@ -1,54 +1,85 @@
 const express = require("express");
+const CareGuide = require('../models/careGuide');
 const careGuideRouter = express.Router();
+const cors = require("./cors");
 
 careGuideRouter
   .route("/")
-  .all((req, res, next) => {
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/plain");
-    next();
+  .options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
+  .get(cors.cors, (req, res, next) => {
+    CareGuide.find()
+      .then((careGuides) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(careGuides);
+      })
+      .catch((err) => next(err));
   })
-  .get((req, res) => {
-    res.end("Will send all the care guide to you");
+  .post(cors.corsWithOptions, (req, res, next) => {
+    CareGuide.create(req.body)
+      .then((careGuide) => {
+        console.log("Care Guide created", careGuide);
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(careGuide);
+      })
+      .catch((err) => next(err));
   })
-  .post((req, res) => {
-    res.end(
-      `Will add the care guide: ${req.body.name} with description: ${req.body.description}`
-    );
-  })
-  .put((req, res) => {
+  .put(cors.corsWithOptions, (req, res) => {
     res.statusCode = 403;
     res.end("PUT operation not supported on /careGuides");
   })
-  .delete((req, res) => {
-    res.end("Deleting all care guide");
+  .delete(cors.corsWithOptions, (req, res, next) => {
+    CareGuide.deleteMany()
+      .then((response) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(response);
+      })
+      .catch((err) => next(err));
   });
 
 careGuideRouter
   .route("/:careGuideId")
-  .all((req, res, next) => {
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/plain");
-    next();
+  .options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
+  .get(cors.cors, (req, res, next) => {
+    CareGuide.findById(req.params.careGuideId)
+      .then((careGuide) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(careGuide);
+      })
+      .catch((err) => next(err));
   })
-  .get((req, res) => {
-    res.end(
-      `Will send details of the care guide: ${req.params.careGuideId} to you`
-    );
-  })
-  .post((req, res) => {
+  .post(cors.corsWithOptions, (req, res) => {
     res.statusCode = 403;
     res.end(
       `POST operation not supported on /careGuides/${req.params.careGuideId}`
     );
   })
-  .put((req, res) => {
-    res.write(`Updating the care guide: ${req.params.careGuideId}\n`);
-    res.end(`Will update the care guide: ${req.body.name}
-        with description: ${req.body.description}`);
+  .put(cors.corsWithOptions, (req, res, next) => {
+    CareGuide.findByIdAndUpdate(
+      req.params.careGuideId,
+      {
+        $set: req.body,
+      },
+      { new: true }
+    )
+      .then((careGuide) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(careGuide);
+      })
+      .catch((err) => next(err));
   })
-  .delete((req, res) => {
-    res.end(`Deleting care guide: ${req.params.careGuideId}`);
+  .delete(cors.corsWithOptions, (req, res, next) => {
+    CareGuide.findByIdAndDelete(req.params.careGuideId)
+      .then((response) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(response);
+      })
+      .catch((err) => next(err));
   });
 
 module.exports = careGuideRouter;
