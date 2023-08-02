@@ -1,13 +1,14 @@
-const express = require("express");
-const morgan = require("morgan");
+var createError = require("http-errors");
+var express = require("express");
+var path = require("path");
+var logger = require("morgan");
+const passport = require('passport')
+const config = require('./config');
+
+var indexRouter = require("./routes/index");
+var usersRouter = require("./routes/users");
 const careGuideRouter = require("./routes/careGuideRouter");
 const articleRouter = require("./routes/articleRouter");
-
-const hostname = "localhost";
-const port = 3000;
-
-app.use(morgan("dev"));
-app.use(express.json());
 
 const mongoose = require("mongoose");
 
@@ -26,6 +27,16 @@ connect.then(
 
 var app = express();
 
+// Secure traffic only
+app.all('*', (req, res, next) => {
+    if (req.secure) {
+      return next();
+    } else {
+        console.log(`Redirecting to: https://${req.hostname}:${app.get('secPort')}${req.url}`);
+        res.redirect(301, `https://${req.hostname}:${app.get('secPort')}${req.url}`);
+    }
+});
+
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
@@ -43,6 +54,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/careGuides", careGuideRouter);
 app.use("/articles", articleRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
